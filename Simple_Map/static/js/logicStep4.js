@@ -37,8 +37,20 @@ let map = L.map('mapid', {
     zoom: 3,
     layers: [streets]
 })
-L.control.layers(baseMaps).addTo(map);
 
+
+// Create the earthquake layer for our map.
+let earthquakes = new L.layerGroup();
+
+// We define an object that contains the overlays.
+// This overlay will be visible all the time.
+let overlays = {
+  Earthquakes: earthquakes
+};
+
+// Then we add a control to the map that will allow the user to change
+// which layers are visible.
+L.control.layers(baseMaps,overlays).addTo(map);
 
 // Retrieve the earthquake GeoJSON data.
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson").then(function(data) {
@@ -86,5 +98,8 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
         onEachFeature: function(feature, layer) {
         layer.bindPopup("Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place);
       }
-        }).addTo(map);
+        }).addTo(earthquakes);
+
+        //then we add the earthquak layer to our map
+        earthquakes.addTo(map);
     });
